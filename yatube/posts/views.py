@@ -7,7 +7,6 @@ from .forms import PostForm
 from django.shortcuts import redirect
 
 
-@login_required
 def index(request):
     post_list = Post.objects.all().order_by('-pub_date')
     paginator = Paginator(post_list, 10)
@@ -37,7 +36,6 @@ def show_base_template(request):
     return render(request, template)
 
 
-@login_required
 def profile(request, username):
     post_author = get_object_or_404(User, username=username)
     post_list = post_author.posts.all().order_by('-pub_date')
@@ -49,11 +47,11 @@ def profile(request, username):
         'page_obj': page_obj,
         'username': username,
         'post_count': post_count,
+        'post_author': post_author,
     }
     return render(request, 'posts/profile.html', context)
 
 
-@login_required
 def post_detail(request, post_id):
     this_post = get_object_or_404(Post, id=post_id)
     author_post_count = this_post.author.posts.count()
