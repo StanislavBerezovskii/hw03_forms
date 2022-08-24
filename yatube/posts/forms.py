@@ -2,6 +2,7 @@ from django import forms
 
 from .models import Post
 
+from django.utils.translation import gettext_lazy as _
 
 class PostForm(forms.ModelForm):
     # Форма для создания поста
@@ -9,10 +10,10 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ('text', 'group',)
         labels = {
-            'text': 'Текст поста',
-            'group': 'Группа',
+            'text': _('Текст'),
+            'group': _('Группа'),
         }
         help_texts = {
-            'text': 'Какая-то подсказка для админа.',
-            'group': 'Группа',
+            'text': _('Подсказка для админа.'),
+            'group': _('Подсказка для админа.')
         }

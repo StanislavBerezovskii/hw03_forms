@@ -2,14 +2,15 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Post, Group, User
-from .forms import PostForm
 from django.shortcuts import redirect
 
+from .models import Post, Group, User
+from .forms import PostForm
+from django.conf import settings as s
 
 def index(request):
-    post_list = Post.objects.all().order_by('-pub_date')
-    paginator = Paginator(post_list, 10)
+    post_list = Post.objects.all()
+    paginator = Paginator(post_list, s.PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -20,8 +21,8 @@ def index(request):
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
-    post_list = group.posts.all().order_by('-pub_date')
-    paginator = Paginator(post_list, 10)
+    post_list = group.posts.all()
+    paginator = Paginator(post_list, s.PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -38,9 +39,9 @@ def show_base_template(request):
 
 def profile(request, username):
     post_author = get_object_or_404(User, username=username)
-    post_list = post_author.posts.all().order_by('-pub_date')
-    post_count = post_author.posts.count()
-    paginator = Paginator(post_list, 10)
+    post_list = post_author.posts.all()
+    post_count = post_list.count()
+    paginator = Paginator(post_list, s.PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -86,7 +87,7 @@ def post_edit(request, post_id):
         return redirect('posts:post_detail', post_id)
     form = PostForm(request.POST or None, instance=post)
     if form.is_valid():
-        post = form.save(commit=False)
+        post = form.save()
         post.save()
         return redirect('posts:post_detail', post_id)
     context = {
