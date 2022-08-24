@@ -5,17 +5,19 @@ User = get_user_model()
 
 
 class Group(models.Model):
-    title = models.CharField(verbose_name= 'Название', max_length=200)
-    slug = models.SlugField(verbose_name= 'URL-Адрес',unique=True)
-    description = models.TextField(verbose_name= 'Описание')
+    title = models.CharField(verbose_name='Название', max_length=200)
+    slug = models.SlugField(verbose_name='URL-Адрес', unique=True)
+    description = models.TextField(verbose_name='Описание')
 
     def __str__(self):
         return self.title
 
 
 class Post(models.Model):
-    text = models.TextField(verbose_name= 'Текст', help_text = 'Подсказка для админа')
-    pub_date = models.DateTimeField(verbose_name= 'Дата публикации', auto_now_add=True)
+    text = models.TextField(
+        verbose_name='Текст', help_text='Подсказка для админа')
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации', auto_now_add=True)
 
     author = models.ForeignKey(
         User,
@@ -29,7 +31,7 @@ class Post(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='posts',
-        help_text = 'Подсказка для админа',
+        help_text='Подсказка для админа',
         verbose_name='Группа'
     )
 
