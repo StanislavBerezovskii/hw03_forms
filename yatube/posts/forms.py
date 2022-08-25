@@ -1,7 +1,6 @@
 from django import forms
 
 from django.utils.translation import gettext_lazy as _
-# Понятно, что можно и без "_", но так ведь короче :)
 
 from .models import Post, Group
 
