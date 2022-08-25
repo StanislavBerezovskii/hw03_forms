@@ -24,3 +24,6 @@ class PostForm(forms.ModelForm):
                 'not_empty': _('Это поле обязательно для заполнения.'),
             },
         }
+        widgets = {
+            'text': forms.Textarea(attrs={'cols': 97, 'rows': 8}),
+        }
