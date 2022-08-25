@@ -21,19 +21,35 @@
           <div class="card-body">
             <form method="post"
               {% if is_edit %}
-                action="{% url 'posts:post_edit' post_id %}"
+                action="{% url 'posts:post_edit' post.id %}"
               {% else %}
                 action="{% url 'posts:post_create' %}"
               {% endif %}
             >
             {% csrf_token %}
+              <div class="fieldWrapper">
+                {{ form.text.errors }}
+                {% if is_edit %}
+                <p>
+                {{ post }}
+                </p>
+                {% endif %}
+                {{ form.text.label }}
+                <p>
+                {{ form.text }}
+                </p>
+                {% if form.text.help_text %}
+                <p class="help">{{ form.text.help_text|safe }}</p>
+                {% endif %}
+              </div>
+              {% comment %}
               <div class="form-group row my-3 p-3">
                 <label for="id_text">
                   Текст поста
                   <span class="required text-danger" >*</span>
                 </label>
                 <textarea name="text" cols="40" rows="10" class="form-control" required id="id_text">{% if is_edit %}{{ post }}{% endif %}</textarea>
-​
+
                 <small id="id_text-help" class="form-text text-muted">
                   {% if is_edit %}
                     Текст поста
@@ -42,6 +58,7 @@
                   {% endif %}
                 </small>
               </div>
+              {% endcomment %}
               <div class="form-group row my-3 p-3">
                 <label for="id_group">
                   Группа

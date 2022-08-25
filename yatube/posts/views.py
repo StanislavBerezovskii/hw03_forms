@@ -3,24 +3,23 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-
 from django.conf import settings as s
 
 from .models import Post, Group, User
 from .forms import PostForm
 
 
-def pagination(page, queryset):
+def pagination(request, queryset):
+    request = request.GET.get('page')
     paginator = Paginator(queryset, s.PER_PAGE)
-    page_obj = paginator.get_page(page)
+    page_obj = paginator.get_page(request)
     return page_obj
 
 
 def index(request):
     post_list = Post.objects.all()
-    page_number = request.GET.get('page')
     context = {
-        'page_obj': pagination(page_number, post_list)
+        'page_obj': pagination(request, post_list)
     }
     return render(request, 'posts/index.html', context)
 
@@ -28,26 +27,19 @@ def index(request):
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     post_list = group.posts.all()
-    page_number = request.GET.get('page')
     context = {
         'group': group,
-        'page_obj': pagination(page_number, post_list),
+        'page_obj': pagination(request, post_list),
     }
     return render(request, 'posts/group_list.html', context)
-
-
-def show_base_template(request):
-    template = 'base.html'
-    return render(request, template)
 
 
 def profile(request, username):
     post_author = get_object_or_404(User, username=username)
     post_list = post_author.posts.all()
     post_count = post_list.count()
-    page_number = request.GET.get('page')
     context = {
-        'page_obj': pagination(page_number, post_list),
+        'page_obj': pagination(request, post_list),
         'username': username,
         'post_count': post_count,
         'post_author': post_author,
@@ -89,12 +81,10 @@ def post_edit(request, post_id):
         return redirect('posts:post_detail', post_id)
     form = PostForm(request.POST or None, instance=post)
     if form.is_valid():
-        post = form.save()
-        post.save()
+        form.save()
         return redirect('posts:post_detail', post_id)
     context = {
         'form': form,
-        'post_id': post_id,
         'is_edit': True,
         'post': post,
     }
