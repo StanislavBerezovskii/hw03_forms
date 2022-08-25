@@ -26,51 +26,32 @@
                 action="{% url 'posts:post_create' %}"
               {% endif %}
             >
-            {% csrf_token %}
+              {% csrf_token %}
               <div class="fieldWrapper">
-                {{ form.text.errors }}
+                {{ form.errors.required }}
                 {% if is_edit %}
-                <p>
-                {{ post }}
-                </p>
+                  <p>
+                    {{ post }}
+                  </p>
                 {% endif %}
                 {{ form.text.label }}
-                <p>
-                {{ form.text }}
-                </p>
+                  <p>
+                    {{ form.text }}
+                  </p>
                 {% if form.text.help_text %}
-                <p class="help">{{ form.text.help_text|safe }}</p>
+                  <p class="help">
+                    {{ form.text.help_text|safe }}
+                  </p>
                 {% endif %}
-              </div>
-              {% comment %}
-              <div class="form-group row my-3 p-3">
-                <label for="id_text">
-                  Текст поста
-                  <span class="required text-danger" >*</span>
-                </label>
-                <textarea name="text" cols="40" rows="10" class="form-control" required id="id_text">{% if is_edit %}{{ post }}{% endif %}</textarea>
-
-                <small id="id_text-help" class="form-text text-muted">
-                  {% if is_edit %}
-                    Текст поста
-                  {% else %}
-                    Текст нового поста
-                  {% endif %}
-                </small>
-              </div>
-              {% endcomment %}
-              <div class="form-group row my-3 p-3">
-                <label for="id_group">
-                  Группа
-                </label>
-                <select name="group" class="form-control" id="id_group">
-                  {% for group in form.group %}
-                    {{ group }}
-                  {% endfor %}
-                </select>
-                <small id="id_group-help" class="form-text text-muted">
-                  Группа, к которой будет относиться пост
-                </small>
+                {{ form.group.label }}
+                  <p>
+                    {{ form.group }}
+                  </p>
+                {% if form.group.help_text %}
+                  <p class="help">
+                    {{ form.group.help_text|safe }}
+                  </p>
+                {% endif %}
               </div>
               <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">

@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 # Понятно, что можно и без "_", но так ведь короче :)
 
-from .models import Post
+from .models import Post, Group
 
 
 class PostForm(forms.ModelForm):
@@ -17,13 +17,14 @@ class PostForm(forms.ModelForm):
         }
         help_texts = {
             'text': _('Введите текст поста.'),
-            'group': _('Группа поста.')
+            'group': _('Выберите группу для поста.')
         }
         error_messages = {
             'text': {
-                'not_empty': _('Это поле обязательно для заполнения.'),
+                'required': _('Это поле обязательно для заполнения.'),
             },
         }
         widgets = {
             'text': forms.Textarea(attrs={'cols': 97, 'rows': 8}),
+            'group': forms.Select(choices=Group.objects.all())
         }
