@@ -25,5 +25,4 @@ class PostForm(forms.ModelForm):
         }
         widgets = {
             'text': forms.Textarea(attrs={'cols': 97, 'rows': 8}),
-            'group': forms.Select(choices=Group.objects.all())
         }

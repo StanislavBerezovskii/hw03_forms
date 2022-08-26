@@ -44,9 +44,11 @@
                   </p>
                 {% endif %}
                 {{ form.group.label }}
-                  <p>
-                    {{ form.group }}
-                  </p>
+                <select name="group" class="form-control" id="id_group">
+                  {% for group in form.group %}
+                    {{ group }}
+                  {% endfor %}
+                </select>
                 {% if form.group.help_text %}
                   <p class="help">
                     {{ form.group.help_text|safe }}
