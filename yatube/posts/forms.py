@@ -2,7 +2,7 @@ from django import forms
 
 from django.utils.translation import gettext_lazy as _
 
-from .models import Post
+from .models import Post, Group
 
 
 class PostForm(forms.ModelForm):
@@ -25,4 +25,5 @@ class PostForm(forms.ModelForm):
         }
         widgets = {
             'text': forms.Textarea(attrs={'cols': 97, 'rows': 8}),
+            'group': forms.Select(class= "form-control", id="id_group", choices=Group.objects.all()[:10]),
         }
