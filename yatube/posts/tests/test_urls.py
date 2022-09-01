@@ -2,10 +2,9 @@ from django.test import TestCase, Client
 
 
 class StaticURLTests(TestCase):
+    def setUp(self):
+        self.guest_client = Client()
+
     def test_homepage(self):
-        # Создаем экземпляр клиента
-        guest_client = Client()
-        # Делаем запрос к главной странице и проверяем статус
-        response = guest_client.get('/')
-        # Утверждаем, что для прохождения теста код должен быть равен 200
+        response = self.guest_client.get('/')
         self.assertEqual(response.status_code, 200)
