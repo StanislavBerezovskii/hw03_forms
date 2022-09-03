@@ -32,7 +32,7 @@ class Post(models.Model):
         on_delete=models.SET_NULL,
         related_name='posts',
         help_text='Подсказка для админа',
-        verbose_name='Группа'
+        verbose_name='Группа, к которой будет относиться пост'
     )
 
     def __str__(self):
