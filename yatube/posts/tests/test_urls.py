@@ -1,10 +1,74 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 
+from ..models import Post, Group
 
-class StaticURLTests(TestCase):
+User = get_user_model()
+
+
+class URLTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Создадим запись в БД для проверки доступности адреса task/test-slug/
+        cls.user = User.objects.create_user(username='TestUser')
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            description='Тестовое описание',
+            slug='test-slug'
+        )
+        cls.post = Post.objects.create(
+            text='Тестовый текст',
+            author=cls.user
+        )
+
     def setUp(self):
+        # Создаем неавторизованный клиент
         self.guest_client = Client()
+        # Создаем второй клиент
+        self.authorized_client = Client()
+        # Авторизуем пользователя
+        self.authorized_client.force_login(self.user)
 
-    def test_homepage(self):
-        response = self.guest_client.get('/')
-        self.assertEqual(response.status_code, 200)
+    # Проверяем общедоступные страницы
+    def test_free_access_pages(self):
+        free_access_url_list = [
+            '/',
+            f'/group/{self.group.slug}/',
+            f'/profile/{self.post.author}/',
+            f'/posts/{self.post.id}/'
+        ]
+        for url in free_access_url_list:
+            with self.subTest(url=url):
+                response = self.guest_client.get(url)
+                self.assertEqual(response.status_code, 200)
+
+    def test_restricted_access_pages(self):
+        restricted_access_url_list = [
+            '/create/',
+            f'/posts/{self.post.id}/edit/'
+        ]
+        for url in restricted_access_url_list:
+            with self.subTest(url=url):
+                response = self.authorized_client.get(url)
+                self.assertEqual(response.status_code, 200)
+
+    def test_restricted_access_pages_redirect(self):
+        restricted_access_url_list = [
+            '/create/',
+            f'/posts/{self.post.id}/edit/'
+        ]
+        for url in restricted_access_url_list:
+            with self.subTest(url=url):
+                response = self.guest_client.get(url, follow=True)
+                self.assertRedirects(response, f'/auth/login/?next={url}')
+
+    def test_create_redirects_not_author(self):
+        foreign_author = User.objects.create_user(username='SomeDude')
+        foreign_post = Post.objects.create(
+            text='Чужой пост',
+            author=foreign_author
+        )
+        response = self.authorized_client.get(
+            f'/posts/{foreign_post.id}/edit/', follow=True)
+        self.assertRedirects(response, f'/posts/{foreign_post.id}/')
