@@ -32,6 +32,8 @@ class URLTests(TestCase):
 
     # Проверяем общедоступные страницы
     def test_free_access_pages(self):
+        """Страницы /, /group/<slug>/, /profile/<username>/ и /posts/<post_id>
+        доступны любому пользователю."""
         free_access_url_list = [
             '/',
             f'/group/{self.group.slug}/',
@@ -44,6 +46,8 @@ class URLTests(TestCase):
                 self.assertEqual(response.status_code, 200)
 
     def test_restricted_access_pages(self):
+        """Страницы /create/ и /posts/<post_id>/edit/>
+        доступны только авторизованным пользователям."""
         restricted_access_url_list = [
             '/create/',
             f'/posts/{self.post.id}/edit/'
@@ -54,6 +58,8 @@ class URLTests(TestCase):
                 self.assertEqual(response.status_code, 200)
 
     def test_restricted_access_pages_redirect(self):
+        """Страницы /create/ и /posts/<post_id>/edit/> перенаправляют
+        неавторизованных пользователей на страницу авторизации."""
         restricted_access_url_list = [
             '/create/',
             f'/posts/{self.post.id}/edit/'
@@ -64,6 +70,8 @@ class URLTests(TestCase):
                 self.assertRedirects(response, f'/auth/login/?next={url}')
 
     def test_create_redirects_not_author(self):
+        """Страница /posts/<post_id>/edit/> перенаправляет
+        авторизованного пользователя на страницу поста, если тот не автор."""
         foreign_author = User.objects.create_user(username='SomeDude')
         foreign_post = Post.objects.create(
             text='Чужой пост',
@@ -90,6 +98,7 @@ class URLTests(TestCase):
                 self.assertTemplateUsed(response, template)
 
     def test_non_existant_page_404(self):
-        url = '/nonexistant_page/'
+        """При запросе неусществующего URL-адреса происходит ошибка 404."""
+        url = '/unexisting_page/'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
