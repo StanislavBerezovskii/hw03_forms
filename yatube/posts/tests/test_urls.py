@@ -1,3 +1,4 @@
+from tkinter.messagebox import OK
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 
@@ -72,3 +73,24 @@ class URLTests(TestCase):
         response = self.authorized_client.get(
             f'/posts/{foreign_post.id}/edit/', follow=True)
         self.assertRedirects(response, f'/posts/{foreign_post.id}/')
+
+    def test_urls_use_correct_templates(self):
+        """URL-адрес использует соответствующий шаблон."""
+        # Шаблоны по адресам
+        templates_url_names = {
+            '/': 'posts/index.html',
+            f'/group/{self.group.slug}/': 'posts/group_list.html',
+            f'/profile/{self.post.author}/': 'posts/profile.html',
+            f'/posts/{self.post.id}/': 'posts/post_detail.html',
+            '/create/': 'posts/create_post.html',
+            f'/posts/{self.post.id}/edit/': 'posts/create_post.html',
+        }
+        for address, template in templates_url_names.items():
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address)
+                self.assertTemplateUsed(response, template)
+
+    def test_non_existant_page_404(self):
+        url = '/nonexistant_page/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
