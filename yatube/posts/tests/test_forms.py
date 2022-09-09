@@ -5,7 +5,7 @@ from ..forms import PostForm
 from ..models import Post, Group, User
 
 
-class PostCreateFormTests(TestCase):
+class PostFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
