@@ -138,3 +138,36 @@ class PagesTests(TestCase):
         self.assertIsInstance(response.context.get('form'), PostForm)
         self.assertEqual(response.context.get('is_edit'), True)
         self.assertEqual(response.context.get('post'), self.post)
+
+
+class PaginatorViewsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Создадим запись в БД для проверки доступности адреса task/test-slug/
+        cls.user = User.objects.create_user(username='TestUser')
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            description='Тестовое описание',
+            slug='test-slug'
+        )
+        for i in range(1, 14):
+            cls.post = Post.objects.create(
+                id=i,
+                text='Тестовый текст',
+                author=cls.user,
+                group=cls.group
+            )
+
+    def setUp(self):
+        self.guest_client = Client()
+
+    def test_first_page_contains_ten_records(self):
+        """Тестирование паджинатора. На первой странице 10 объектов."""
+        response = self.client.get(reverse('posts:index'))
+        self.assertEqual(len(response.context.get('page_obj')), 10)
+
+    def test_second_page_contains_three_records(self):
+        """Тестирование паджинатора. На второй странице 3 объекта."""
+        response = self.client.get(reverse('posts:index') + '?page=2')
+        self.assertEqual(len(response.context.get('page_obj')), 3)
